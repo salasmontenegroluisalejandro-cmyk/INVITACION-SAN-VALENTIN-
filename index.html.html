@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quieres ser mi San Valentín?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffe6e6; /* Fondo rosado suave */
+            padding: 50px;
+            position: relative; /* Para el confeti */
+            overflow: hidden; /* Evita scroll por confeti */
+        }
+        h1 {
+            color: #d63384; /* Rosa fuerte */
+        }
+        img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: opacity 1s ease; /* Transición suave para el cambio de imagen */
+        }
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column; /* Botones en columna para evitar superposición */
+            align-items: center;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.5s ease; /* Transición suave para el scale */
+            min-width: 150px; /* Para que no se vea raro al cambiar texto */
+        }
+        #yes {
+            background-color: #28a745; /* Verde para Sí */
+            color: white;
+        }
+        #no {
+            background-color: #dc3545; /* Rojo para No */
+            color: white;
+        }
+        #confirmation {
+            display: none;
+            margin-top: 20px;
+            font-size: 24px;
+            color: #d63384;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red; /* Color base, se cambia en JS */
+            animation: fall 3s linear forwards;
+            pointer-events: none; /* No interfiere con clics */
+        }
+        @keyframes fall {
+            0% {
+                top: -10px;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>¿Quieres ser mi San Valentín? 💖</h1>
+    <!-- Imagen principal: cambia según la respuesta -->
+    <img id="mainImage" src="https://i.pinimg.com/originals/db/aa/c1/dbaac13f6278b91a15e480752b8a7242.gif" alt="Imagen inicial feliz">
+    <p>Haz clic en tu respuesta...</p>
+    <div class="buttons">
+        <button id="yes">Sí</button>
+        <button id="no">No</button>
+    </div>
+    <div id="confirmation">
+        ¡Genial! Ahora eres mi San Valentín. Te amo mucho. ❤️
+        <!-- Opcional: agrega una imagen aquí, como <img src="tu-foto.jpg" alt="Nosotros"> -->
+    </div>
+
+    <script>
+        let noSize = 1; // Tamaño inicial del botón No (escala)
+        let yesSize = 1; // Tamaño inicial del botón Sí
+        let phraseIndex = 0; // Índice para las frases
+
+        // Array de frases divertidas y motivadoras (para el botón No)
+        const phrases = [
+            "¡Piensa en los chocolates y flores! 🍫🌹",
+            "¡Cenas románticas y abrazos infinitos! 🍝🤗",
+            "¡Serás mi reina por siempre! 👑",
+            "¿No? ¡Mira qué grande el Sí! 😉",
+            "¡Di sí y hagamos magia! ✨",
+            "¡Eres la mejor San Valentín! 💕",
+            "¡Te reto a decir no otra vez! 😏",
+            "¡Acepta, te amo! 😘"
+        ];
+
+        const mainImage = document.getElementById('mainImage');
+        const yesButton = document.getElementById('yes');
+        const noButton = document.getElementById('no');
+        const confirmation = document.getElementById('confirmation');
+
+        // Función para crear confeti
+        function createConfetti() {
+            const colors = ['#ff69b4', '#ff1493', '#dc143c', '#ffffff', '#ffd700']; // Colores románticos
+            for (let i = 0; i < 50; i++) { // 50 partículas
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw'; // Posición horizontal aleatoria
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; // Color aleatorio
+                confetti.style.animationDelay = Math.random() * 2 + 's'; // Retraso aleatorio para variación
+                document.body.appendChild(confetti);
+                // Elimina el confeti después de la animación
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        noButton.addEventListener('click', () => {
+            noSize *= 0.8; // Hace el No más pequeño (80% del tamaño anterior)
+            yesSize *= 1.2; // Hace el Sí más grande (120% del tamaño anterior)
+            noButton.style.transform = `scale(${noSize})`;
+            yesButton.style.transform = `scale(${yesSize})`;
+
+            // Cambia el texto del botón No a una frase diferente
+            noButton.textContent = phrases[phraseIndex % phrases.length]; // Cicla las frases
+            phraseIndex++; // Avanza al siguiente
+
+            // Cambia a la imagen triste (GIF animado)
+            mainImage.src = "https://i.pinimg.com/originals/43/42/da/4342da449483b086d3b96c63dba631af.gif";
+        });
+
+        yesButton.addEventListener('click', () => {
+            confirmation.style.display = 'block'; // Muestra el mensaje de confirmación
+
+            // Bloquea el botón No para que no se pueda cambiar la respuesta
+            noButton.disabled = true;
+            noButton.style.cursor = 'not-allowed';
+            noButton.style.opacity = '0.5'; // Visualmente deshabilitado
+
+            // Cambia a la imagen feliz (GIF animado)
+            mainImage.src = "https://i.pinimg.com/originals/d7/16/09/d716091203de5f82b403ea7f208a6379.gif";
+
+            // Lanza la animación de confeti
+            createConfetti();
+        });
+    </script>
+</body>
+</html>
